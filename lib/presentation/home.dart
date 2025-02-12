@@ -19,8 +19,8 @@ class Home extends StatelessWidget {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-              onPressed: () => refresh(context), child: Text("Refresh")),
+          // ElevatedButton(
+          //     onPressed: () => refresh(context), child: Text("Refresh")),
           Expanded(child:
               BlocBuilder<ItemBloc, ItemState>(builder: (context, state) {
             if (state is ItemLoading) {
@@ -28,14 +28,19 @@ class Home extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
             } else if (state is ItemLoaded) {
-              return ListView.builder(
-                  itemCount: state.items.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(state.items[index].title),
-                      subtitle: Text(state.items[index].completed.toString()),
-                    );
-                  });
+              return RefreshIndicator(
+                onRefresh: () async {
+                  refresh(context);
+                },
+                child: ListView.builder(
+                    itemCount: state.items.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(state.items[index].title),
+                        subtitle: Text(state.items[index].completed),
+                      );
+                    }),
+              );
             } else if (state is ItemError) {
               return Center(child: Text(state.message));
             }
